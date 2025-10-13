@@ -1,0 +1,16 @@
+#ifndef TOKEN_TYPE_H
+#define TOKEN_TYPE_H
+
+typedef enum {
+	PLUS,
+	MINUS,
+	GREATER,
+	GREATER_EQUAL,
+	LESS,
+	LESS_EQUAL,
+	EQUAL_EQUAL,
+	AMPERSAND_AMPERSAND,
+	PIPE_PIPE,
+} TokenType;
+
+#endif
