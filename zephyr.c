@@ -6,10 +6,14 @@
 #include "toolbox/string.h"
 #include "toolbox/dynamic_reader/dynamic_reader.h"
 
+typedef struct {
+	int had_error;
+} Zephyr;
+
 char *EXEC_CONSOLE = "console";
 char *EXEC_RUN = "run";
 
-int console(int argc, char** argv) {
+int zephyr_console(Zephyr* z, int argc, char** argv) {
 	printf("> ");
 
 	DynamicReader dr = { .stream = stdin };
@@ -38,12 +42,23 @@ int console(int argc, char** argv) {
 	exit(0);
 }
 
-int run(int argc, char** argv) {
+int zephyr_run(Zephyr* z, int argc, char** argv) {
 	printf("Running files is not supported... yet.");
 	exit(1);
 }
 
+void zephyr_report(Zephyr* z, int line, char* where, char* message) {
+	printf("[line %d] Error %s: %s", line, where, message);
+	z->had_error = 1;
+}
+
+void zephyr_error(Zephyr* z, int line, char* message) {
+	zephyr_report(z, line, "", message);
+}
+
 int main(int argc, char** argv) {
+	Zephyr z = { .had_error = 0 };
+
 	if (argc < 2) {
 		printf("Usage:\n");
 		return 0;
@@ -58,12 +73,12 @@ int main(int argc, char** argv) {
 
 	char* command = argv[1];
 	if (strcmp(command, EXEC_CONSOLE) == 0) {
-		console(shifted_argc, shifted_argv);
+		zephyr_console(&z, shifted_argc, shifted_argv);
 		return 0;
 	}
 
 	if (strcmp(command, EXEC_RUN) == 0) {
-		run(shifted_argc, shifted_argv);
+		zephyr_run(&z, shifted_argc, shifted_argv);
 		return 0;
 	}
 

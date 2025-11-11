@@ -3,11 +3,7 @@ cmake_minimum_required(VERSION 3.31)
 project(zephyr)
 
 add_subdirectory(toolbox)
-add_executable(zephyr
-	zephyr.c 
-	token.c 
-	tokenizer.c
-)
+add_executable(zephyr "zephyr.c" "tokenizer.c" "token.h" "token_list.c" "token_list.h")
 target_link_libraries(zephyr PRIVATE toolbox)
 
 if (MSVC)
