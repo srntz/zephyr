@@ -2,6 +2,7 @@
 #define TOKEN_LIST_H
 
 #include "token.h"
+#include "error.h"
 
 typedef struct {
 	Token* contents;
@@ -9,8 +10,8 @@ typedef struct {
 	int buf_size;
 } TokenList;
 
-TokenList token_list_init();
-int token_list_append(TokenList* tkl, Token tk);
+Error token_list_init(TokenList* out_tkl);
+Error token_list_append(TokenList* tkl, Token tk);
 void token_list_free(TokenList* tkl);
 
 #endif
