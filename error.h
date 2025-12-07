@@ -5,8 +5,11 @@
 
 typedef enum {
 	NO_ERR,
+
 	ERR_ALLOC_FAILED,
 	ERR_INDEX_OUT_OF_BOUNDS,
+
+	ERR_TOKENIZER_UNKNOWN_TOKEN,
 } ErrorCode;
 
 typedef struct {
