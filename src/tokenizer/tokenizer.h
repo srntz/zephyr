@@ -1,7 +1,8 @@
 #ifndef ZEPHYR_TOKENIZER_H
 #define ZEPHYR_TOKENIZER_H
 
-#include "token_list.h"
+#include "token/token_list.h"
+#include <stddef.h>
 
 typedef struct {
     char* source;

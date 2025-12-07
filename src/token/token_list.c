@@ -1,6 +1,6 @@
+#include "token.h"
 #include "token_list.h"
 #include "error.h"
-#include <stdio.h>
 #include <malloc.h>
 
 /*
@@ -62,7 +62,7 @@ Error token_list_append(TokenList* tkl, Token tk) {
 
 	Returns ERR_INDEX_OUT_OF_BOUNDS if the given index violates the bounds of the buffer.
 */
-Error token_list_get(TokenList* tkl, int index, Token* out_token) {
+Error token_list_get(TokenList* tkl, int index, Token *out_token) {
 	if (index < 0 || index >= tkl->len) {
 		Error err = {
 			.err_code = ERR_INDEX_OUT_OF_BOUNDS,
@@ -70,7 +70,7 @@ Error token_list_get(TokenList* tkl, int index, Token* out_token) {
 		};
 		return err;
 	}
-	out_token = &(tkl->contents[index]);
+	out_token->type = tkl->contents[index].type;
 	return NOERR;
 }
 

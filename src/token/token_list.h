@@ -2,7 +2,7 @@
 #define TOKEN_LIST_H
 
 #include "token.h"
-#include "error.h"
+#include "error/error.h"
 
 typedef struct {
 	Token* contents;

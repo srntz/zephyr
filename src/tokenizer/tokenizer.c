@@ -1,10 +1,12 @@
-#include <stdlib.h>
-#include "token.h"
-#include "token_list.h"
-#include "token_type.h"
-#include "string.h"
-#include "stdbool.h"
 #include "tokenizer.h"
+
+#include <stdlib.h>
+
+#include "error.h"
+#include "stdbool.h"
+#include "string.h"
+#include "token/token.h"
+#include "token/token_list.h"
 
 bool is_at_end(Tokenizer *t);
 char advance(Tokenizer *t);
