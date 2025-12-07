@@ -1,6 +1,8 @@
 #include "dynamic_reader.h"
 #include <stdlib.h>
 #include <errno.h>
+#include <limits.h>
+#include <string.h>
 
 DynamicReaderError init_error(DynamicReaderErrorType type, char* message) {
 	DynamicReaderError dre = { .type = type, .message = message };
@@ -63,7 +65,7 @@ DynamicReaderRV dyn_reader_read(DynamicReader* dr) {
 		char* new_buff = realloc(buff, size);
 		if (new_buff == NULL) {
 			char message_buff[100];
-			sprintf_s(message_buff, 100, "Failed to reallocate memory for the string buffer with size '%d'", size);
+			sprintf(message_buff, "Failed to reallocate memory for the string buffer with size '%d'", size);
 			rv.err = init_error(DYN_READER_ERR_BUF_REALLOC_FAILED, message_buff);
 			goto error;
 		}
