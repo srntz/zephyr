@@ -2,6 +2,7 @@
 #define ZEPHYR_TOKENIZER_H
 
 #include "token/token_list.h"
+#include "error/error.h"
 #include <stddef.h>
 
 typedef struct {

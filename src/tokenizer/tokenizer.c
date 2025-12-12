@@ -10,8 +10,8 @@
 
 bool is_at_end(Tokenizer *t);
 char advance(Tokenizer *t);
-void fillin_single_char_token(Token *tk, TokenType type, char* lexeme, int line);
-Error scan_token(Tokenizer *t, Token *tk);
+void append_single_char_token(Tokenizer *t, TokenType type, char* lexeme, int line);
+Error scan_token(Tokenizer *t);
 
 Error tokenizer_init(char* source, Tokenizer* t) {
 	TokenList tkl;
@@ -32,17 +32,11 @@ Error tokenizer_init(char* source, Tokenizer* t) {
 
 Error tokenizer_tokenize(Tokenizer* t) {
 	while (is_at_end(t) == false) {
-		Token tk;
 		Error err;
 
 		t->start = t->current;
 
-		err = scan_token(t, &tk);
-		if (is_error(&err)) {
-			return err;
-		}
-
-		err = token_list_append(&t->token_list, tk);
+		err = scan_token(t);
 		if (is_error(&err)) {
 			return err;
 		}
@@ -56,68 +50,71 @@ Error tokenizer_tokenize(Tokenizer* t) {
 	return NOERR;
 }
 
-Error scan_token(Tokenizer* t, Token *tk) {
+Error scan_token(Tokenizer* t) {
 	const char c = advance(t);
 
 	switch (c) {
 		case '+': {
-			fillin_single_char_token(tk, PLUS, "+", t->line);
+			append_single_char_token(t, PLUS, "+", t->line);
 			break;
 		}
 		case '-': {
-			fillin_single_char_token(tk, MINUS, "-", t->line);
+			append_single_char_token(t, MINUS, "-", t->line);
 			break;
 		}
 		case '*': {
-			fillin_single_char_token(tk, STAR, "*", t->line);
+			append_single_char_token(t, STAR, "*", t->line);
 			break;
 		}
 		case '/': {
-			fillin_single_char_token(tk, SLASH, "/", t->line);
+			append_single_char_token(t, SLASH, "/", t->line);
 			break;
 		}
 		case '<': {
-			fillin_single_char_token(tk, LESS, "<", t->line);
+			append_single_char_token(t, LESS, "<", t->line);
 			break;
 		}
 		case '>': {
-			fillin_single_char_token(tk, GREATER, ">", t->line);
+			append_single_char_token(t, GREATER, ">", t->line);
 			break;
 		}
 		case '(': {
-			fillin_single_char_token(tk, LEFT_PAREN, "(", t->line);
+			append_single_char_token(t, LEFT_PAREN, "(", t->line);
 			break;
 		}
 		case ')': {
-			fillin_single_char_token(tk, RIGHT_PAREN, ")", t->line);
+			append_single_char_token(t, RIGHT_PAREN, ")", t->line);
 			break;
 		}
 		case '{': {
-			fillin_single_char_token(tk, LEFT_BRACE, "{", t->line);
+			append_single_char_token(t, LEFT_BRACE, "{", t->line);
 			break;
 		}
 		case '}': {
-			fillin_single_char_token(tk, RIGHT_BRACE, "}", t->line);
+			append_single_char_token(t, RIGHT_BRACE, "}", t->line);
 			break;
 		}
 		case '.': {
-			fillin_single_char_token(tk, DOT, ".", t->line);
+			append_single_char_token(t, DOT, ".", t->line);
 			break;
 		}
 		case ',': {
-			fillin_single_char_token(tk, COMMA, ", ", t->line);
+			append_single_char_token(t, COMMA, ", ", t->line);
 			break;
 		}
 		case ';': {
-			fillin_single_char_token(tk, SEMICOLON, ";", t->line);
+			append_single_char_token(t, SEMICOLON, ";", t->line);
 			break;
 		}
 		case '!': {
-			fillin_single_char_token(tk, BANG, "!", t->line);
+			append_single_char_token(t, BANG, "!", t->line);
 			break;
 		}
 		case '=': {
-			fillin_single_char_token(tk, EQUAL, "=", t->line);
+			append_single_char_token(t, EQUAL, "=", t->line);
+			break;
+		}
+		case ' ': {
 			break;
 		}
 		default: {
@@ -131,11 +128,9 @@ Error scan_token(Tokenizer* t, Token *tk) {
 	return NOERR;
 }
 
-void fillin_single_char_token(Token *tk, TokenType type, char* lexeme, int line) {
-	tk->type = type;
-	tk->lexeme = lexeme;
-	tk->literal = NULL;
-	tk->line = line;
+void append_single_char_token(Tokenizer *t, TokenType type, char* lexeme, int line) {
+	Token tk = {.type = type, .lexeme = lexeme, .line = line};
+	token_list_append(&t->token_list, tk);
 }
 
 bool is_at_end(Tokenizer* t) {
