@@ -1,0 +1,9 @@
+set(
+        SPEC_INCLUDE_SOURCES
+        src/tokenizer/tokenizer.h
+        src/tokenizer/tokenizer.c
+        src/error/error.h
+        src/error/error.c
+        src/token/token_list.h
+        src/token/token_list.c
+)
