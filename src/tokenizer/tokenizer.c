@@ -1,5 +1,6 @@
 #include "tokenizer.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "error.h"
@@ -8,9 +9,11 @@
 #include "token/token.h"
 #include "token/token_list.h"
 
-bool is_at_end(Tokenizer *t);
+bool is_at_end(const Tokenizer *t);
 char advance(Tokenizer *t);
+char peek(const Tokenizer *t);
 void append_single_char_token(Tokenizer *t, TokenType type, char* lexeme, int line);
+Error unknown_token_error(const char *lexeme, size_t lexeme_len);
 Error scan_token(Tokenizer *t);
 
 Error tokenizer_init(char* source, Tokenizer* t) {
@@ -71,11 +74,21 @@ Error scan_token(Tokenizer* t) {
 			break;
 		}
 		case '<': {
-			append_single_char_token(t, LESS, "<", t->line);
+			if (!is_at_end(t) && peek(t) == '=') {
+				append_single_char_token(t, LESS_EQUAL, "<=", t->line);
+				advance(t);
+			} else {
+				append_single_char_token(t, LESS, "<", t->line);
+			}
 			break;
 		}
 		case '>': {
-			append_single_char_token(t, GREATER, ">", t->line);
+			if (!is_at_end(t) && peek(t) == '=') {
+				append_single_char_token(t, GREATER_EQUAL, ">=", t->line);
+				advance(t);
+			} else {
+				append_single_char_token(t, GREATER, ">", t->line);
+			}
 			break;
 		}
 		case '(': {
@@ -107,11 +120,37 @@ Error scan_token(Tokenizer* t) {
 			break;
 		}
 		case '!': {
-			append_single_char_token(t, BANG, "!", t->line);
+			if (!is_at_end(t) && peek(t) == '=') {
+				append_single_char_token(t, BANG_EQUAL, "!=", t->line);
+				advance(t);
+			} else {
+				append_single_char_token(t, BANG, "!", t->line);
+			}
 			break;
 		}
 		case '=': {
-			append_single_char_token(t, EQUAL, "=", t->line);
+			if (!is_at_end(t) && peek(t) == '=') {
+				append_single_char_token(t, EQUAL_EQUAL, "==", t->line);
+				advance(t);
+			} else {
+				append_single_char_token(t, EQUAL, "=", t->line);
+			}
+			break;
+		}
+		case '&': {
+			if (is_at_end(t) || peek(t) != '&') {
+				return unknown_token_error(&c, 1);
+			}
+			append_single_char_token(t, AMPERSAND_AMPERSAND, "&&", t->line);
+			advance(t);
+			break;
+		}
+		case '|': {
+			if (is_at_end(t) || peek(t) != '|') {
+				return unknown_token_error(&c, 1);
+			}
+			append_single_char_token(t, PIPE_PIPE, "||", t->line);
+			advance(t);
 			break;
 		}
 		case ' ': {
@@ -128,12 +167,19 @@ Error scan_token(Tokenizer* t) {
 	return NOERR;
 }
 
-void append_single_char_token(Tokenizer *t, TokenType type, char* lexeme, int line) {
+Error unknown_token_error(const char *lexeme, const size_t lexeme_len) {
+	const size_t buf_size = 50 + lexeme_len;
+	char buf[buf_size];
+	snprintf(buf, buf_size, "Unknown token '%s'", lexeme);
+	return (Error){.err_code = ERR_TOKENIZER_UNKNOWN_TOKEN, .err_msg = buf};
+}
+
+void append_single_char_token(Tokenizer *t, const TokenType type, char* lexeme, const int line) {
 	Token tk = {.type = type, .lexeme = lexeme, .line = line};
 	token_list_append(&t->token_list, tk);
 }
 
-bool is_at_end(Tokenizer* t) {
+bool is_at_end(const Tokenizer* t) {
 	return (t->current >= strlen(t->source)) ? true : false;
 }
 
@@ -141,6 +187,10 @@ char advance(Tokenizer *t) {
 	const char c = t->source[t->current];
 	t->current++;
 	return c;
+}
+
+char peek(const Tokenizer *t) {
+	return t->source[t->current];
 }
 
 void tokenizer_free(Tokenizer* t) {
